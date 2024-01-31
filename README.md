@@ -3,7 +3,7 @@
 
 ## DATASET
 - Images are **(28, 28)** pixels
-- Total image amount is **60000** but we use **10000** for training
+- MNIST dataset has **60000** image but we use **10000** of them for training
 
 
 &nbsp;
@@ -27,7 +27,7 @@
 
 &nbsp;
 &nbsp;
-**Testing Some Sample**
+**Testing Some Sample with Random Indices**
 
 ![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_testing_some_sample.png)
 
