@@ -99,12 +99,16 @@ def accuracy(predictions, Y):
 #gradient descent algorithm and model itself
 def gradientDescent(X, Y, iter, learning_rate):
     W1, b1, W2, b2, W3, b3 = initParams()
+    losses = []
     
     for i in range(iter+1):
         Z1, A1, Z2, A2, Z3, A3 = forwardProp(W1, b1, W2, b2, W3, b3, X)
         dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3 = backwardProp(Z1, Z2, A1, A2, A3, W2, W3, X, Y)
         W1, b1, W2, b2, W3, b3 = updateParams(W1, W2, W3, b1, b2, b3, dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3, learning_rate)
         loss = computeLoss(A3, Y)
+        
+        if i % 100 == 0:
+            losses.append(loss)
         
         if i % 200 == 0:
             predictions = predict(A3)
@@ -115,7 +119,15 @@ def gradientDescent(X, Y, iter, learning_rate):
             print(f"Accuracy= %{acc:.5f}")
             print(f"Loss= {loss:.5f}\n")
     
-    return W1, b1, W2, b2, W3, b3
+    return W1, b1, W2, b2, W3, b3, losses
+
+def plotLoss(loss):
+    
+    plt.plot(loss[1:])
+    plt.ylabel("loss")
+    plt.xlabel("iteration")
+    plt.title("Loss vs Iteration Graph")
+    plt.show()
 
 def randomTestIndices(amount, max_index):
     test_indices = []
@@ -176,7 +188,7 @@ class MODEL:
         fig.set_figheight(8)
         fig.set_figwidth(8)
         plt.gray()
-        plt.suptitle(f"A Sample of {type.capitalize()} Predictions\nIndex:i || Model Prediction:P || True Label: T")
+        plt.suptitle(f"A Sample of {type.capitalize()} Predictions\nIndex:i || Model Prediction: P || True Label: T")
         
         for i in range(size):
             for j in range(size):
@@ -212,7 +224,10 @@ x_flat = x_train.reshape(x_train.shape[0], -1).T
 x_flat = zScoreNormalize(x_flat)
 
 #training model
-W1, b1, W2, b2, W3, b3 = gradientDescent(x_flat, y_train, 10000, 0.01)
+W1, b1, W2, b2, W3, b3, losses = gradientDescent(x_flat, y_train, 10000, 0.01)
+
+#plotting loss values
+plotLoss(losses)
 
 #creating 'model' object with weights and biases which model has found. We can easily predict or visualize our findings. 
 model = MODEL(x_flat, y_train, W1, b1, W2, b2, W3, b3)
