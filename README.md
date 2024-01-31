@@ -21,29 +21,24 @@
 - Accuracy around **%75 - %85** in general
 
 &nbsp;
-&nbsp;
 **Last Iteration of One Model**
 
-![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_accuracy.png)
+![ScreenShot](./img/3_layer_nn_v1/3_layer_nn_v1_accuracy.png)
 
-&nbsp;
 &nbsp;
 **Testing Some Sample with Random Indices**
 
-![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_testing_some_sample.png)
+![ScreenShot](./img/3_layer_nn_v1/3_layer_nn_v1_testing_some_sample.png)
 
-&nbsp;
 &nbsp;
 **A True Labeled Sample from Model Predictions**
 
-![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_true_sample.png)
+![ScreenShot](./img/3_layer_nn_v1/3_layer_nn_v1_true_sample.png)
 
-&nbsp;
 &nbsp;
 **A Wrong Labeled Sample from Model Predictions**
 
-![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_wrong_sample.png)
-
+![ScreenShot](./img/3_layer_nn_v1/3_layer_nn_v1_wrong_sample.png)
 
 &nbsp;
 ## 3 LAYER NEURAL NETWORK v2
@@ -51,14 +46,14 @@
 - 2nd layer -> 15 neurons, **RELU** activation function
 - 3rd layer -> 10 neurons, **SOFTMAX** activation function
 - All layers **fully connected**
-- Training Image Amount: **15000**
+- Training Image Amount: **15000**, more than these causes slow computation
 - Test Image Amount: **2500**
 - Iteration amount: **3000**
 - Learning Rate = **0.01**
 - There is **He Initializer** for RELU, **Xavier Initializer** for SOFTMAX activation functions
 - There is **L2 Regularization** for prevent overfitting
 - Regularization parameter **Lambda = 0.05**
-- Still there is no optimizer so, **unstable** gradient descending
+- Still there is no optimizer so, **unstable** gradient descending shows up
 - Training set accuracy around **%95+** in general
 - Test set accuracy between **%89 - %92** in general
 #### *Differences between v1 and v2*
@@ -69,25 +64,25 @@
 &nbsp;
 **Last Iteration of One Model**
 
-![ScreenShot](./doc/3_layer_nn_v2/3_layer_nn_v2_train_accuracy.png)
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_train_accuracy.png)
 
 &nbsp;
 **Test Set Accuracy**
 
-![ScreenShot](./doc/3_layer_nn_v2/3_layer_nn_v2_test_accuracy.png)
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_test_accuracy.png)
 
 &nbsp;
 **A True Labeled Sample from Train Set**
 
-![ScreenShot](./doc/3_layer_nn_v2/3_layer_nn_v2_train_true_sample.png)
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_train_true_sample.png)
 
 &nbsp;
 **A Wrong Labeled Sample from Train Set**
 
-![ScreenShot](./doc/3_layer_nn_v2/3_layer_nn_v2_train_wrong_sample.png)
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_train_wrong_sample.png)
 
 &nbsp;
 **A Wrong Labeled Sample from Test Set**
 
-![ScreenShot](./doc/3_layer_nn_v2/3_layer_nn_v2_test_wrong_sample.png)
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_test_wrong_sample.png)
 
