@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.datasets import load_digits
+from keras.datasets import mnist
 
 #Normalizing input values because of the ensure numerical stability, this function provides normal distribution
 def zScoreNormalize(data):
@@ -19,13 +19,13 @@ def oneHotY(Y):
 
 #[0, 1) initialization of weights and biases nothing special, this will change in other versions 
 def initParams():
-    W1 = np.random.randint(10, size=(20, 64)) * 0.1
+    W1 = np.random.randint(10, size=(20, 784)) * 0.1
     b1 = np.random.randint(10, size=(20, 1)) * 0.1
     W2 = np.random.randint(10, size=(15, 20)) * 0.1
     b2 = np.random.randint(10, size=(15, 1)) * 0.1
     W3 = np.random.randint(10, size=(10, 15)) * 0.1
     b3 = np.random.randint(10, size=(10, 1)) * 0.1
-       
+
     return W1, b1, W2, b2, W3, b3
 
 #Rectifier linear unit function for activation
@@ -117,6 +117,14 @@ def gradientDescent(X, Y, iter, learning_rate):
     
     return W1, b1, W2, b2, W3, b3
 
+def randomTestIndices(amount, max_index):
+    test_indices = []
+    
+    for i in range(amount):
+        test_indices.append(np.random.randint(max_index))
+        
+    return test_indices
+
 class MODEL:
     def __init__(self, X, Y, W1, b1, W2, b2, W3, b3):
         self.X = X
@@ -145,18 +153,19 @@ class MODEL:
         predicts_sample = []
         
         if type.lower() == "wrong":
+            
             for i in range(self.Y.size):
                 isSame, prediction, true_label = self.testPredict(i)
                 if(isSame == False):
                     predicts_sample.append([i, prediction, true_label])
                     
         elif type.lower() == "true":
-            i = 0
+            
             while len(predicts_sample) < 25:
+                i = np.random.randint(10000)
                 isSame, prediction, true_label = self.testPredict(i)
                 if(isSame == True):
                     predicts_sample.append([i, prediction, true_label])
-                i += 1
                     
         self.plotPredictions(type, predicts_sample)
         return predicts_sample
@@ -176,7 +185,7 @@ class MODEL:
                 except IndexError:
                     i = size+1
                     break
-                axes[i, j].imshow(self.X[:, ind, None].reshape((8, 8)))
+                axes[i, j].imshow(self.X[:, ind, None].reshape((28, 28)))
                 axes[i, j].set_title(f"i: {ind}, P: {p}, T: {t}")
         
         plt.tight_layout()
@@ -189,17 +198,17 @@ class MODEL:
             print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")     
         
         
-digits = load_digits()
-x_train = digits.images
-m_train = x_train.shape[0]
-num_px = x_train.shape[1]
-y_train = digits.target
-#print(y_train, y_train.shape) #(1797,)
-#print(x_train, x_train.shape) #(1797, 8, 8)
+(x_train, y_train), (_,_) = mnist.load_data()
 
-#Converting the each images' pixels as a one vector => we get X matrix each column is one image.
+x_train = x_train[0:10000, :]
+y_train = y_train[0:10000]
+m_train = y_train.size
+#print(y_train, y_train.shape) #(10000,)
+#print(x_train, x_train.shape) #(10000, 28, 28)
+
+# Converting the each images' pixels as a one vector => we get X matrix each column is one image.
 x_flat = x_train.reshape(x_train.shape[0], -1).T
-#print(x_flat.shape)    #(64, 1797)
+#print(x_flat.shape)    #(784, 10000)
 x_flat = zScoreNormalize(x_flat)
 
 #training model
@@ -209,10 +218,9 @@ W1, b1, W2, b2, W3, b3 = gradientDescent(x_flat, y_train, 10000, 0.01)
 model = MODEL(x_flat, y_train, W1, b1, W2, b2, W3, b3)
 
 #random indices to visualize model's guess and their true values
-test_indices = [254, 18, 967, 99]
+test_indices = randomTestIndices(10, m_train)
 model.testPredictionSample(test_indices)
 
 #plotting some of true and wrong predictions with maxixum amount of 25
 model.predictionSamples("true")
-model.predictionSamples("wrong")
-
+wrong_label = model.predictionSamples("wrong") #you can get all wrong labeled image indexes

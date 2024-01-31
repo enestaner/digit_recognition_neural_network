@@ -2,8 +2,8 @@
 &nbsp;
 
 ## DATASET
-- Images are **(8,8)** pixels
-- Total image amount is **1797**
+- Images are **(28, 28)** pixels
+- Total image amount is **60000** but we use **10000** for training
 
 
 &nbsp;
@@ -17,7 +17,7 @@
 - There is no optimizer, initializer just vanilla neural network with **Z Score Normalization**
 - Lack of the optimizer provides **unstability** on model performance
 - Lack of the initializer provides **not learning** model
-- Accuracy around **%75 - %90** in general
+- Accuracy around **%75 - %85** in general
 
 &nbsp;
 &nbsp;
@@ -35,13 +35,13 @@
 &nbsp;
 **A True Labeled Sample from Model Predictions**
 
-![ScreeShot](./doc/3_layer_nn_v1/3_layer_nn_v1_true_sample.png)
+![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_true_sample.png)
 
 &nbsp;
 &nbsp;
 **A Wrong Labeled Sample from Model Predictions**
 
-![ScreeShot](./doc/3_layer_nn_v1/3_layer_nn_v1_wrong_sample.png)
+![ScreenShot](./doc/3_layer_nn_v1/3_layer_nn_v1_wrong_sample.png)
 
 
 
