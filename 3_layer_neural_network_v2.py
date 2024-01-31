@@ -12,10 +12,9 @@ def zScoreNormalize(data):
 
 #creating new Y matrix with one hot encoding because our target values categorical
 def oneHotY(Y):
-    one_hot_Y = np.zeros((np.max(Y) + 1, Y.size))
-    one_hot_Y[Y, np.arange(Y.size)] = 1
-    # print(one_hot_Y.shape)     #(10, 10000)
-    # print(one_hot_Y)
+    one_hot_Y = np.zeros((np.max(Y) + 1, Y.size)) 
+    one_hot_Y[Y, np.arange(Y.size)] = 1     #(10, 15000)
+
     return one_hot_Y
 
 def initParams():
@@ -91,11 +90,11 @@ def computeLoss(A3, Y):
 
     return loss
 
-#model's last layer predictions
+#model last layer predictions
 def predict(A3):
     return np.argmax(A3, 0)
 
-#accuracy of model's last layer predictions
+#accuracy of model last layer predictions
 def accuracy(predictions, Y):  
     return np.sum(predictions == Y) / Y.size * 100
 
@@ -122,6 +121,7 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_):
     
     return W1, b1, W2, b2, W3, b3, losses
 
+#visualizing loss values
 def plotLoss(loss):
     
     plt.plot(loss[1:])
@@ -130,6 +130,7 @@ def plotLoss(loss):
     plt.title("Loss vs Iteration Graph")
     plt.show()
 
+#random index generator
 def randomTestIndices(amount, max_index):
     test_indices = []
     
@@ -210,7 +211,7 @@ class MODEL:
             _, p, t = self.testPredict(sample[i])
             print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")     
         
-        
+#getting MNIST Digits dataset from keras library
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 x_train = x_train[0:15000, :]   #(15000, 28, 28)
@@ -223,6 +224,7 @@ y_test = y_test[0:2500]         #(2500, )
 x_train_flat = x_train.reshape(x_train.shape[0], -1).T  #(784, 15000)
 x_test_flat = x_test.reshape(x_test.shape[0], -1).T    #(784, 2500)
 
+# Normalizing input data
 x_train_flat = zScoreNormalize(x_train_flat)
 x_test_flat = zScoreNormalize(x_test_flat)
 

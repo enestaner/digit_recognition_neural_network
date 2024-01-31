@@ -12,9 +12,8 @@ def zScoreNormalize(data):
 #creating new Y matrix with one hot encoding because our target values categorical
 def oneHotY(Y):
     one_hot_Y = np.zeros((np.max(Y) + 1, Y.size))
-    one_hot_Y[Y, np.arange(Y.size)] = 1
-    # print(one_hot_Y.shape)     #(10,1797)
-    # print(one_hot_Y)
+    one_hot_Y[Y, np.arange(Y.size)] = 1     #(10,1797)
+
     return one_hot_Y
 
 #[0, 1) initialization of weights and biases nothing special, this will change in other versions 
@@ -88,11 +87,11 @@ def computeLoss(A3, Y):
 
     return loss
 
-#model's last layer predictions
+#model last layer predictions
 def predict(A3):
     return np.argmax(A3, 0)
 
-#accuracy of model's last layer predictions
+#accuracy of model last layer predictions
 def accuracy(predictions, Y):  
     return np.sum(predictions == Y) / Y.size * 100
 
@@ -121,6 +120,7 @@ def gradientDescent(X, Y, iter, learning_rate):
     
     return W1, b1, W2, b2, W3, b3, losses
 
+#visualization of loss values
 def plotLoss(loss):
     
     plt.plot(loss[1:])
@@ -209,18 +209,17 @@ class MODEL:
             _, p, t = self.testPredict(sample[i])
             print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")     
         
-        
+#getting MNIST Digit data from keras library
 (x_train, y_train), (_,_) = mnist.load_data()
 
-x_train = x_train[0:10000, :]
-y_train = y_train[0:10000]
+x_train = x_train[0:10000, :]   #(10000, 28, 28)
+y_train = y_train[0:10000]      #(10000,)
 m_train = y_train.size
-#print(y_train, y_train.shape) #(10000,)
-#print(x_train, x_train.shape) #(10000, 28, 28)
 
 # Converting the each images' pixels as a one vector => we get X matrix each column is one image.
-x_flat = x_train.reshape(x_train.shape[0], -1).T
-#print(x_flat.shape)    #(784, 10000)
+x_flat = x_train.reshape(x_train.shape[0], -1).T    #(784, 10000)
+
+# Normalizing data  
 x_flat = zScoreNormalize(x_flat)
 
 #training model
