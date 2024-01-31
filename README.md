@@ -15,7 +15,7 @@
 - Training Image Amount: **10000**
 - Iteration amount: **10000**
 - Learning Rate: **0.01**
-- There is no optimizer, initializer just vanilla neural network with **Z Score Normalization**
+- There is no optimizer and initializer, just vanilla neural network with **Z Score Normalization**
 - Lack of the optimizer provides **unstability** on model performance
 - Lack of the initializer provides **not learning** model
 - Accuracy around **%75 - %85** in general
