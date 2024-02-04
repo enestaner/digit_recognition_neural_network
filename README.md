@@ -54,7 +54,7 @@
 - There is **L2 Regularization** for prevent overfitting
 - Regularization parameter **Lambda = 0.05**
 - Still there is no optimizer so, **unstable** gradient descending shows up
-- Training set accuracy around **%95+** in general
+- Training set accuracy around **%90+** in general
 - Test set accuracy between **%89 - %92** in general
 #### *Differences between v1 and v2*
 - Because of the initializers the accuracy is **so rapidly** increasing
