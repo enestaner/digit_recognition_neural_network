@@ -86,3 +86,12 @@
 
 ![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_test_wrong_sample.png)
 
+&nbsp;
+**Loss Graph**
+
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_loss.png)
+
+&nbsp;
+**Model Prediction Probabilities of Wrong Labeled Images in Test Set**
+
+![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_probs.png)

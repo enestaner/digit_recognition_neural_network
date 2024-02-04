@@ -108,9 +108,9 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_):
         dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3 = backwardProp(Z1, Z2, A1, A2, A3, W2, W3, X, Y)
         W1, b1, W2, b2, W3, b3 = updateParams(W1, W2, W3, b1, b2, b3, dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3, learning_rate, lambda_, Y.size)
         loss = computeLoss(A3, Y)
+        losses.append(loss)
         
         if i % 100 == 0:
-            losses.append(loss)
             predictions = predict(A3)
             acc = accuracy(predictions, Y)
             print(f"--Iteration {i}--")
@@ -124,20 +124,12 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_):
 #visualizing loss values
 def plotLoss(loss):
     
-    plt.plot(loss[1:])
+    plt.plot(loss)
     plt.ylabel("loss")
     plt.xlabel("iteration")
     plt.title("Loss vs Iteration Graph")
     plt.show()
 
-#random index generator
-def randomTestIndices(amount, max_index):
-    test_indices = []
-    
-    for i in range(amount):
-        test_indices.append(np.random.randint(max_index))
-        
-    return test_indices
 
 class MODEL:
     def __init__(self, X, Y, W1, b1, W2, b2, W3, b3):
@@ -176,7 +168,7 @@ class MODEL:
         elif type.lower() == "true":
             
             while len(predicts_sample) < 25:
-                i = np.random.randint(10000)
+                i = np.random.randint(self.Y.size)
                 isSame, prediction, true_label = self.testPredict(i)
                 if(isSame == True):
                     predicts_sample.append([i, prediction, true_label])
@@ -209,8 +201,44 @@ class MODEL:
     
         for i in range(len(sample)):
             _, p, t = self.testPredict(sample[i])
-            print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")     
+            print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")
+            
+    def probability(self, index):
+        _, _, _, _, _, prob = forwardProp(self.W1, self.b1, self.W2, self.b2, self.W3, self.b3, self.X[:, index, None])
         
+        return prob
+    
+    def getProbabilities(self, index_list):
+        probs = []
+        
+        for i in index_list:
+            probs.append(self.probability(i))
+            
+        return probs
+    
+    def plotProbabilities(self, index_list):
+        probs = self.getProbabilities(index_list)
+        size = 5
+        fig, axes = plt.subplots(size, 2)
+        fig.set_figheight(10)
+        fig.set_figwidth(10)
+        plt.gray()
+        plt.suptitle("Model Prediction Probabilities of Wrong Labeled Images in Test Set")
+        
+        for i in range(size):
+            true_label = self.Y[index_list[i]]
+            axes[i, 0].imshow(self.X[:, index_list[i], None].reshape((28, 28)))
+            axes[i, 0].set_title(f"i: {index_list[i]}, True Label: {true_label}")
+            axes[i, 1].set_xlabel("Digits")
+            axes[i, 1].set_ylabel("Probability %")
+            axes[i, 1].bar(range(10), probs[i].squeeze() * 100, width = 0.4, color = "purple")
+            plt.sca(axes[i, 1])
+            plt.xticks(range(10))
+            plt.yticks(range(0, 101, 20))
+            
+        plt.tight_layout()
+        plt.show()
+                
 #getting MNIST Digits dataset from keras library
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
@@ -219,6 +247,7 @@ y_train = y_train[0:15000]      #(15000, )
 m_train = y_train.size          # 15000
 x_test = x_test[0:2500, :]      #(2500, 28, 28)
 y_test = y_test[0:2500]         #(2500, )
+m_test = y_test.size            # 2500
 
 # Converting the each images' pixels as a one vector => we get X matrix each column is one image.
 x_train_flat = x_train.reshape(x_train.shape[0], -1).T  #(784, 15000)
@@ -237,8 +266,12 @@ plotLoss(losses)
 #creating 'model' object with weights and biases which model has found. We can easily predict or visualize our findings. 
 model = MODEL(x_train_flat, y_train, W1, b1, W2, b2, W3, b3)
 
-#random indices to visualize model's guess and their true values
-test_indices = randomTestIndices(10, m_train)
+#random indices to visualize model guess and their true values
+test_indices = []
+for i in range(10):
+    rand = np.random.randint(m_train)
+    test_indices.append(rand)
+    
 model.testPredictionSample(test_indices)
 
 #plotting some of true and wrong predictions with maxixum amount of 25
@@ -251,3 +284,11 @@ print(f"\nTest Set Accuracy: %{accuracy(model.singlePredict(model.X), model.Y):.
 
 #test set wrong labeled images
 wrong_label_test_set = model.predictionSamples("wrong", set_type = "test")
+
+#bar chart visualization of probability distribution of wrong labeled images in test set (sample amount = 5)
+test_indices = []
+for i in range(5):
+    rand = np.random.randint(len(wrong_label_test_set))
+    test_indices.append(wrong_label_test_set[rand][0])
+    
+model.plotProbabilities(test_indices)
