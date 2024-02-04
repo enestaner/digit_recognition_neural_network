@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from math import sqrt
 from pathlib import Path
-import json, codecs
+import json
 
 #Normalizing input values because of the ensure numerical stability, this function provides normal distribution
 def zScoreNormalize(data):
@@ -249,7 +249,7 @@ class MODEL:
         plt.tight_layout()
         plt.show()
     
-    #saving model informations on a txt file
+    #saving model informations on a txt and json file
     def saveModelData(self, iter_count, train_count, test_count, train_acc, test_acc, learning_rate, lambda_, type_="3-nn-v2"):
         model_results = Path(__file__).with_name('trained_models.txt')
         model_infos = Path(__file__).with_name('trained_models_properties.json')
