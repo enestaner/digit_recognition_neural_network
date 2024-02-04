@@ -2,6 +2,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.datasets import mnist
 from math import sqrt
+from pathlib import Path
+import json, codecs
 
 #Normalizing input values because of the ensure numerical stability, this function provides normal distribution
 def zScoreNormalize(data):
@@ -119,7 +121,7 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_):
             print(f"Accuracy= %{acc:.5f}")
             print(f"Loss= {loss:.5f}\n")
     
-    return W1, b1, W2, b2, W3, b3, losses
+    return W1, b1, W2, b2, W3, b3, losses, acc
 
 #visualizing loss values
 def plotLoss(loss):
@@ -141,13 +143,15 @@ class MODEL:
         self.b2 = b2
         self.W3 = W3
         self.b3 = b3
-        
+
+    #predicting value of given image(s)
     def singlePredict(self, single_X):
         _, _, _, _, _, A3 = forwardProp(self.W1, self.b1, self.W2, self.b2, self.W3, self.b3, single_X)
         prediction = predict(A3)
         
         return prediction
     
+    #testing image prediction is True or False
     def testPredict(self, index):
         current_image = self.X[:, index, None]
         prediction = self.singlePredict(current_image)
@@ -155,6 +159,7 @@ class MODEL:
     
         return prediction == true_label, prediction, true_label
     
+    #finding all wrong labeled images or true predictions with amount 25
     def predictionSamples(self, type, set_type = "train"):
         predicts_sample = []
         
@@ -176,6 +181,7 @@ class MODEL:
         self.plotPredictions(type, predicts_sample, set_type)
         return predicts_sample
     
+    #plotting prediction samples and their true labels
     def plotPredictions(self, type, sample, set_type):
         size = 5
         fig, axes = plt.subplots(size, size)
@@ -197,17 +203,20 @@ class MODEL:
         plt.tight_layout()
         plt.show()
         
+    #Printing index, prediction and true label of given sample
     def testPredictionSample(self, sample):
     
         for i in range(len(sample)):
             _, p, t = self.testPredict(sample[i])
             print(f"Index: {sample[i]}, Prediction: {p}, True Label: {t}")
-            
+    
+    #Finding probability distribution of one image
     def probability(self, index):
         _, _, _, _, _, prob = forwardProp(self.W1, self.b1, self.W2, self.b2, self.W3, self.b3, self.X[:, index, None])
         
         return prob
     
+    #Finding all probabilities of given index list
     def getProbabilities(self, index_list):
         probs = []
         
@@ -216,6 +225,7 @@ class MODEL:
             
         return probs
     
+    #Plotting wrong labeled images and their probabilities 
     def plotProbabilities(self, index_list):
         probs = self.getProbabilities(index_list)
         size = 5
@@ -238,6 +248,28 @@ class MODEL:
             
         plt.tight_layout()
         plt.show()
+    
+    #saving model informations on a txt file
+    def saveModelData(self, iter_count, train_count, test_count, train_acc, test_acc, type_="3-nn-v2"):
+        model_results = Path(__file__).with_name('trained_models.txt')
+        model_infos = Path(__file__).with_name('trained_models_properties.json')
+        
+        model_ex = {"id": None, "weights": {"w1": self.W1.tolist(), "w2": self.W2.tolist(), "w3": self.W3.tolist()}, "biases": {"b1": self.b1.tolist(), "b2": self.b2.tolist(), "b3": self.b3.tolist()}}
+
+        with model_results.open('a+') as f:
+            f.seek(0)
+            lines = f.readlines()
+            model_id = len(lines) - 1
+            model_ex["id"] = model_id
+            f.write(f"{model_id:^9}|| {type_:^11}|| {iter_count:^16}|| {train_count:^21}|| {test_count:^17}|| {train_acc:^15.5f}|| {test_acc:^13.5f}\n")
+            f.close()
+        
+        with open(model_infos, "r+") as f:
+            data = json.load(f)
+            data.append(model_ex)
+            f.seek(0)
+            json.dump(data, f, indent=4)
+            f.close()
                 
 #getting MNIST Digits dataset from keras library
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -258,7 +290,10 @@ x_train_flat = zScoreNormalize(x_train_flat)
 x_test_flat = zScoreNormalize(x_test_flat)
 
 #training model
-W1, b1, W2, b2, W3, b3, losses = gradientDescent(x_train_flat, y_train, 3000, learning_rate = 0.01, lambda_ = 0.05)
+learning_rate = 0.01
+lambda_ = 0.05
+iters = 3000
+W1, b1, W2, b2, W3, b3, losses, train_accuracy = gradientDescent(x_train_flat, y_train, iters, learning_rate, lambda_)
 
 #plotting loss values
 plotLoss(losses)
@@ -280,7 +315,8 @@ wrong_label_train_set = model.predictionSamples("wrong") #you can get all wrong 
 
 #test set accuracy
 model.X, model.Y = x_test_flat, y_test
-print(f"\nTest Set Accuracy: %{accuracy(model.singlePredict(model.X), model.Y):.5f}")
+test_accuracy = accuracy(model.singlePredict(model.X), model.Y)
+print(f"\nTest Set Accuracy: %{test_accuracy:.5f}")
 
 #test set wrong labeled images
 wrong_label_test_set = model.predictionSamples("wrong", set_type = "test")
@@ -292,3 +328,6 @@ for i in range(5):
     test_indices.append(wrong_label_test_set[rand][0])
     
 model.plotProbabilities(test_indices)
+
+#saving model findings
+model.saveModelData(iters, m_train, m_test, train_accuracy, test_accuracy)
