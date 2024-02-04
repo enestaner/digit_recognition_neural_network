@@ -250,7 +250,7 @@ class MODEL:
         plt.show()
     
     #saving model informations on a txt file
-    def saveModelData(self, iter_count, train_count, test_count, train_acc, test_acc, type_="3-nn-v2"):
+    def saveModelData(self, iter_count, train_count, test_count, train_acc, test_acc, learning_rate, lambda_, type_="3-nn-v2"):
         model_results = Path(__file__).with_name('trained_models.txt')
         model_infos = Path(__file__).with_name('trained_models_properties.json')
         
@@ -261,7 +261,7 @@ class MODEL:
             lines = f.readlines()
             model_id = len(lines) - 1
             model_ex["id"] = model_id
-            f.write(f"{model_id:^9}|| {type_:^11}|| {iter_count:^16}|| {train_count:^21}|| {test_count:^17}|| {train_acc:^15.5f}|| {test_acc:^13.5f}\n")
+            f.write(f"{model_id:^9}|| {type_:^11}|| {iter_count:^16}|| {train_count:^21}|| {test_count:^17}|| {learning_rate:^14}|| {lambda_:^7}|| {train_acc:^15.5f}|| {test_acc:^13.5f}\n")
             f.close()
         
         with open(model_infos, "r+") as f:
@@ -330,4 +330,6 @@ for i in range(5):
 model.plotProbabilities(test_indices)
 
 #saving model findings
-model.saveModelData(iters, m_train, m_test, train_accuracy, test_accuracy)
+isSave = input("Do you want to save this model? (Y/N) ")
+if isSave.lower() == 'y':
+    model.saveModelData(iters, m_train, m_test, train_accuracy, test_accuracy, learning_rate, lambda_)
