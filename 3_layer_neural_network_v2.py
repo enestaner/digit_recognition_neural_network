@@ -5,6 +5,16 @@ from math import sqrt
 from pathlib import Path
 import json
 
+#shuffling the data and slicing given amount
+def shuffleAndSliceData(x, y, amount):
+    shuffle = np.random.permutation(len(x))
+    x_shuffled = x[shuffle]
+    y_shuffled = y[shuffle]
+    x_new = x_shuffled[0:amount, :]
+    y_new = y_shuffled[0:amount]
+    
+    return x_new, y_new
+
 #Normalizing input values because of the ensure numerical stability, this function provides normal distribution
 def zScoreNormalize(data):
     mean_val = np.mean(data, axis=0)
@@ -274,16 +284,15 @@ class MODEL:
 #getting MNIST Digits dataset from keras library
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
-x_train = x_train[0:15000, :]   #(15000, 28, 28)
-y_train = y_train[0:15000]      #(15000, )
-m_train = y_train.size          # 15000
-x_test = x_test[0:2500, :]      #(2500, 28, 28)
-y_test = y_test[0:2500]         #(2500, )
-m_test = y_test.size            # 2500
+#prepare the dataset
+m_train = 15000
+m_test = 2500
+x_train_shuffled, y_train_shuffled = shuffleAndSliceData(x_train, y_train, m_train)     # x_train_shuffled (15000, 28, 28) y_train_shuffled (15000, )
+x_test_shuffled, y_test_shuffled = shuffleAndSliceData(x_test, y_test, m_test)          # x_test_shuffled (2500, 28, 28) y_test_shuffled (2500, )
 
 # Converting the each images' pixels as a one vector => we get X matrix each column is one image.
-x_train_flat = x_train.reshape(x_train.shape[0], -1).T  #(784, 15000)
-x_test_flat = x_test.reshape(x_test.shape[0], -1).T    #(784, 2500)
+x_train_flat = x_train_shuffled.reshape(x_train_shuffled.shape[0], -1).T  #(784, 15000)
+x_test_flat = x_test_shuffled.reshape(x_test_shuffled.shape[0], -1).T    #(784, 2500)
 
 # Normalizing input data
 x_train_flat = zScoreNormalize(x_train_flat)
@@ -293,13 +302,13 @@ x_test_flat = zScoreNormalize(x_test_flat)
 learning_rate = 0.01
 lambda_ = 0.05
 iters = 3000
-W1, b1, W2, b2, W3, b3, losses, train_accuracy = gradientDescent(x_train_flat, y_train, iters, learning_rate, lambda_)
+W1, b1, W2, b2, W3, b3, losses, train_accuracy = gradientDescent(x_train_flat, y_train_shuffled, iters, learning_rate, lambda_)
 
 #plotting loss values
 plotLoss(losses)
 
 #creating 'model' object with weights and biases which model has found. We can easily predict or visualize our findings. 
-model = MODEL(x_train_flat, y_train, W1, b1, W2, b2, W3, b3)
+model = MODEL(x_train_flat, y_train_shuffled, W1, b1, W2, b2, W3, b3)
 
 #random indices to visualize model guess and their true values
 test_indices = []
@@ -314,7 +323,7 @@ model.predictionSamples("true")
 wrong_label_train_set = model.predictionSamples("wrong") #you can get all wrong labeled image indexes
 
 #test set accuracy
-model.X, model.Y = x_test_flat, y_test
+model.X, model.Y = x_test_flat, y_test_shuffled
 test_accuracy = accuracy(model.singlePredict(model.X), model.Y)
 print(f"\nTest Set Accuracy: %{test_accuracy:.5f}")
 
