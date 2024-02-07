@@ -95,3 +95,61 @@
 **Model Prediction Probabilities of Wrong Labeled Images in Test Set**
 
 ![ScreenShot](./img/3_layer_nn_v2/3_layer_nn_v2_probs.png)
+
+&nbsp;
+## 3 LAYER NEURAL NETWORK v3
+- 1st layer -> 20 neurons, **RELU** activation function
+- 2nd layer -> 15 neurons, **RELU** activation function
+- 3rd layer -> 10 neurons, **SOFTMAX** activation function
+- All layers **fully connected**
+- Training Image Amount: Dataset limit **60000**, you are free to choose how much do you want, no more slow computation
+- Test Image Amount: Dataset limit **10000**
+- Iteration amount: **300-400 epochs** in general
+- Learning Rate = **0.01**
+- There is **He Initializer** for RELU, **Xavier Initializer** for SOFTMAX activation functions
+- There is **L2 Regularization** for prevent overfitting
+- Regularization parameter **Lambda = 0.05**
+- There is **Mini-Batching** for optimization
+- Another optimization algorithm is **Gradient Momentum**
+- Gradient Momentum parameter **Beta = 0.9**
+- Training set accuracy around **%95+** in general
+- Test set accuracy between **%93 - %97** in general
+#### *Differences between v2 and v3*
+- Due to *Mini-Batching*, no more vibrations on loss graph. **Stable gradient descending** and **very fast computation**. Therefore, we can calculate **lots of data** with **less epochs**. (*1 Epoch: 1 complete iteration of computing forward and back props for all batches*)
+- Due to *Gradient Momentum*, if the **difference high** then gradient **decreasing higher**, if **difference low** then gradient **decreasing lower**. Because of that **more accurate** and **faster** gradient descending providing.
+- **Less iterations** (epochs) needed for learning and **more accurate** models.
+
+&nbsp;
+**Last Iteration of One Model**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_train_accuracy.png)
+
+&nbsp;
+**Test Set Accuracy**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_test_accuracy.png)
+
+&nbsp;
+**A Wrong Labeled Sample from Train Set**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_train_wrong_sample.png)
+
+&nbsp;
+**A Wrong Labeled Sample from Test Set**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_train_wrong_sample.png)
+
+&nbsp;
+**Loss Graph**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_loss.png)
+
+&nbsp;
+**Model Prediction Probabilities of Wrong Labeled Images in Test Set (1)**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_batch_moment_probs.png)
+
+&nbsp;
+**Model Prediction Probabilities of Wrong Labeled Images in Test Set (2)**
+
+![ScreenShot](./img/3_layer_nn_v3/3_layer_nn_v3_batch_moment_probs_2.png)
