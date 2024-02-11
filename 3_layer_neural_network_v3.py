@@ -12,33 +12,31 @@ def shuffleAndSliceData(x, y, amount):
     y_shuffled = y[shuffle]
     x_new = x_shuffled[0:amount, :]
     y_new = y_shuffled[0:amount]
-    
+
     return x_new, y_new
 
 # split to X and Y given batch size
 def miniBatch(X, Y, batch_size):
     # finding how many batch requires for the given batch size
     batch_count = Y.size // batch_size
-    slices = []
 
     for slice in range(batch_count):
         X_sliced = X[:, slice * batch_size : (slice+1) * batch_size]
         Y_sliced = Y[slice * batch_size : (slice+1) * batch_size]
-        slices.append([X_sliced, Y_sliced])
-    
+        yield X_sliced, Y_sliced
+
     if Y.size % batch_size != 0 :
         # last slice which not fit with given batch size    
         X_sliced = X[:, batch_count * batch_size:]
         Y_sliced = Y[batch_count * batch_size :]
-        slices.append([X_sliced, Y_sliced])
-    
-    return slices
+        yield X_sliced, Y_sliced
 
 # Normalizing input values because of the ensure numerical stability, this function provides normal distribution
 def zScoreNormalize(data):
     mean_val = np.mean(data, axis=0)
     std_val = np.std(data, axis=0)
     normalized_data = (data - mean_val) / std_val
+    
     return normalized_data
 
 # creating new Y matrix with one hot encoding because our target values categorical
@@ -58,7 +56,7 @@ def initParams():
     lower, upper = -(1.0 / sqrt(15)), (1.0 / sqrt(15))
     W3 = lower + np.random.randint(10, size=(10, 15)) * 0.1 * (upper - lower)
     b3 = np.random.randint(10, size=(10, 1)) * 0.1
-    
+
     # gradient momentum parameters
     V_dw1 = np.zeros_like(W1)
     V_db1 = np.zeros_like(b1)
@@ -153,14 +151,17 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_, batch_size, beta):
     W1, b1, W2, b2, W3, b3, V_dw1, V_db1, V_dw2, V_db2, V_dw3, V_db3 = initParams()
     losses = []
 
+    # finding how many batch requires for the given batch size
+    batch_count = lambda x, y: x // y + 1 if x % y != 0 else x // y
+    batch_count = batch_count(Y.size, batch_size)
+
     for i in range(iter+1):
         # to compute avg accuracy and avg loss summing all batches' loss and acc values then dividing batch amount
         loss = 0
         acc = 0
+
         # slicing X and Y matrices to given batch size then applying forward prop, backward pro and update params to all batches
-        slices = miniBatch(X, Y, batch_size)
-        
-        for X_sliced, Y_sliced in slices:
+        for X_sliced, Y_sliced in miniBatch(X, Y, batch_size):
             Z1, A1, Z2, A2, Z3, A3 = forwardProp(W1, b1, W2, b2, W3, b3, X_sliced)
             dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3 = backwardProp(Z1, Z2, A1, A2, A3, W2, W3, X_sliced, Y_sliced)
             V_dw1, V_db1, V_dw2, V_db2, V_dw3, V_db3 = gradientMomentum(V_dw1, V_db1, V_dw2, V_db2, V_dw3, V_db3, dLdW_1, dLdb_1, dLdW_2, dLdb_2, dLdW_3, dLdb_3, beta)
@@ -169,7 +170,6 @@ def gradientDescent(X, Y, iter, learning_rate, lambda_, batch_size, beta):
             predictions = predict(A3)
             acc += accuracy(predictions, Y_sliced)
 
-        batch_count = len(slices)
         loss /= batch_count
         acc /= batch_count
         losses.append(loss)
